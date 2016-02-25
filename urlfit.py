@@ -14,13 +14,21 @@ def shorten(link):
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
     opener.addheaders = \
         [("User-agent", "Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11")]
-    u = opener.open(api.format(link=urllib.quote_plus(link)))
+    try:
+        u = opener.open(api.format(link=urllib.quote_plus(link)))
+    except urllib2.HTTPError, msg:
+        print "Error shortening \"{link}\": {msg} ".format(link=link, msg=str(msg))
+        return None
     code = (json.loads(u.read()))['url']
 
     return urllib.basejoin(base, code)
 
 if len(sys.argv) > 1:
     for url in sys.argv[1:]:
-        print shorten(url)
+        if "http" not in url[:5]:
+            url = "http://"+url
+        u = shorten(url)
+        if u is not None:
+            print "Link \"{link}\" -> \"{short}\"".format(link=url, short=u)
 else:
     pass
