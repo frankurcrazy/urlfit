@@ -3,6 +3,7 @@
 import urllib2, urllib
 import json
 import sys
+import pyperclip
 from cookielib import CookieJar
 
 def shorten(link):
@@ -24,11 +25,15 @@ def shorten(link):
     return urllib.basejoin(base, code)
 
 if len(sys.argv) > 1:
+    result = []
     for url in sys.argv[1:]:
         if "http" not in url[:5]:
             url = "http://"+url
         u = shorten(url)
         if u is not None:
             print "Link \"{link}\" -> \"{short}\"".format(link=url, short=u)
+            result += [u]
+
+    pyperclip.copy("\n".join(result))
 else:
     pass
